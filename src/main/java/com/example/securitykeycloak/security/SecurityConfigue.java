@@ -23,11 +23,10 @@ public class SecurityConfigue {
                 .csrf(AbstractHttpConfigurer::disable)
 
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/v1/hello/user").hasRole("USER")
+                        .requestMatchers("/api/v1/hello/user").hasAnyRole("USER" , "ADMIN")
                         .requestMatchers("/api/v1/hello/admin").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
-
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtConverter))
                 );
@@ -35,8 +34,4 @@ public class SecurityConfigue {
         return http.build();
     }
 
-
-    // commit : ajoute method convert jwt
-    // khassni nrigl ligne 26
-    // create user , admin password 1234
 }

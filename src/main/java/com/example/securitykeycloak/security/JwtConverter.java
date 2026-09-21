@@ -29,14 +29,24 @@ public class JwtConverter implements Converter<Jwt, JwtAuthenticationToken> {
         return new JwtAuthenticationToken(jwt, authorities, jwt.getClaimAsString("preferred_username"));
     }
 
-    private Collection<GrantedAuthority> extractResourceRoles(Jwt jwt) {
-        Map<String, Object> realmAccess = jwt.getClaim("realm_access");
 
-        if (realmAccess == null || realmAccess.get("roles") == null) {
+    private Collection<GrantedAuthority> extractResourceRoles(Jwt jwt) {
+
+        Map<String, Object> resourceAccess = jwt.getClaim("resource_access");
+
+        if (resourceAccess == null) {
             return Set.of();
         }
 
-        Collection<String> roles = (Collection<String>) realmAccess.get("roles");
+        Map<String, Object> client =
+                (Map<String, Object>) resourceAccess.get("SpringSecurity-1");
+
+        if (client == null || client.get("roles") == null) {
+            return Set.of();
+        }
+
+        Collection<String> roles =
+                (Collection<String>) client.get("roles");
 
         return roles.stream()
                 .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
